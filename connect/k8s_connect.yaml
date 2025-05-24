@@ -1,0 +1,179 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: schematalabs
+---
+# Secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: connect-app-secret
+  namespace: schematalabs
+type: Opaque
+data:
+  POSTGRES_USER: cG9zdGdyZXM=
+  POSTGRES_PASS: T3BzQmVAY2gxQDMk
+  NEO4J_USER: bmVvNGo=
+  NEO4J_PASS: bmVvNGox
+  GH_CL_ID: SXYxLjE5ZTZmMzBhNmZkNTViMTM=
+  GH_CL_SECRET: NjU0MzY3NWEwN2NjNzQ0MTM1YTY2MTk3Mjk4MWM1MWVhY2E3MjVjNQ==
+  CONNECT_ACCESS_TOKEN: QmVhcmVyIGV5SmxibU1pT2lKQk1USTRRMEpETFVoVE1qVTJJaXdpWVd4bklqb2lVbE5CTFU5QlJWQXRNalUySW4wLkYySldVNVktWkpXdmNfbDVDRDVMbFpGUm0yanFEQnFNX0s1Z2JGdU9hdmhNTXEtbXB2cjBHYUtNR3FEbThHblZsUmFXY2lsVG9CZDNGVDllWllVYlRPR1RLRWw3alJ1QkRmMk83YmJaVEt1Z3dkQkEzX0M1QUhzbUlBTVIwdWdZMEFCNWdmTmE0bkpRaDVPN250ZkVNdDRsd0c0dFpNMXB6eTZPU0RSbnhrQ08xWkVxWlRkcENEVXpqNGhTQ1NrQ1ZCNEpJM0Q5TWVsNWlEcVEwaXJacUJ2ZFlxZjFoQlpFVTk3M01JaWhYVlNmdmNZTHByRTlVVGNvTm90a0pTR21pTWRNdkx0TTNXWmgtV2NpSjBPMHFvRzZFb1B6VHJYZDZSY3dnZmxuRWdRMkhfTDY4UnpPUnlPYmJUbmotMXNEa2dkQmFzQjQ1QUtIMllpWVQzWFFKZy5Pa1FQeGd5c1pIdG5ZQ1I4Vy1MVENnLnVBdmw2cTNOS0NzOXJ1YXlmZWRmRXpXQ0RqRkZJSEw5anJiczc2clRhT21WZmFiYmhYMzh1NnJsUlBjVFZDZ2VMUEVEQ0lWdlNVV0RpT0xKVW5ZSk4wMlhaR3BNS2dOQVR1SC10a0gtQjVvZ1FDbE01N0dSTHNDS2lwTDE4YV9GaXk5c09jYTRtbnIzQkl1aFZoenJfQS5mb2pmN3h5S1JVQ0dLR1A3RmdfSnd3
+  SMTP_USER_NAME: c2NoZW1hdGFsYWJzQGdtYWlsLmNvbQ==
+  SMTP_PASSWORD: cGl2cWh6c2J6b2hyb3V4cA==
+---
+#pvc
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: connect-disk
+  namespace: schematalabs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+# Deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: connect-app-deployment
+  namespace: schematalabs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dev
+  template:
+    metadata:
+      labels:
+        app: dev
+    spec:
+      containers:
+      - name: connect-app
+        image: us-central1-docker.pkg.dev/prodenv1/schematalabs-connect-app/connect:tag
+        ports:
+        - containerPort: 7081
+        resources:
+          limits:
+            cpu: 500m
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            memory: 2Gi
+        volumeMounts:
+          - name: bootstrap
+            mountPath: /connect/bootstrap
+          - name: cloud-task-key
+            mountPath: /var/secrets/google/cloud-task
+          - name: cluster-key
+            mountPath: /var/secrets/google/cluster
+          - name: compute-key
+            mountPath: /var/secrets/google/compute
+          - name: bucket-key
+            mountPath: /var/secrets/google/bucket
+        env:
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: connect-app-secret
+                key: POSTGRES_USER
+          - name: POSTGRES_PASS
+            valueFrom:
+              secretKeyRef:
+                name: connect-app-secret
+                key: POSTGRES_PASS
+          - name: NEO4J_USER
+            valueFrom:
+              secretKeyRef:
+                name: connect-app-secret
+                key: NEO4J_USER
+          - name: NEO4J_PASS
+            valueFrom:
+              secretKeyRef:
+                name: connect-app-secret
+                key: NEO4J_PASS
+          - name: GH_CL_ID
+            valueFrom:
+              secretKeyRef:
+                name: connect-app-secret
+                key: GH_CL_ID
+          - name: GH_CL_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: connect-app-secret
+                key: GH_CL_SECRET
+          - name: CONNECT_ACCESS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: connect-app-secret
+                key: CONNECT_ACCESS_TOKEN
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /var/secrets/google/cloud-task/cloud-task-sa-key.json
+          - name: BUCKET_SA_CREDENTIALS
+            value: /var/secrets/google/bucket/bucket-sa-key.json
+          - name: SMTP_USER_NAME
+            valueFrom:
+              secretKeyRef:
+                name: connect-app-secret
+                key: SMTP_USER_NAME
+          - name: SMTP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: connect-app-secret
+                key: SMTP_PASSWORD
+      volumes:
+        - name: bootstrap
+          persistentVolumeClaim:
+            claimName: connect-disk
+        - name: cloud-task-key
+          secret:
+            secretName: cloud-task-sa-key
+        - name: cluster-key
+          secret:
+            secretName: cluster-sa-key
+        - name: compute-key
+          secret:
+            secretName: compute-sa-key
+        - name: bucket-key
+          secret:
+            secretName: bucket-sa-key
+
+---
+# BackendConfig to do health check so above deployment will become ready
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: health-check-config-connect
+  namespace: schematalabs
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    port: 7081
+    type: HTTP #case-sensitive
+    requestPath: /connect/actuator/health
+---    
+# Service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: connect-app-service
+  namespace: schematalabs
+  annotations:
+    cloud.google.com/backend-config: '{"default": "health-check-config-connect"}' 
+spec:
+  type: ClusterIP  
+  selector:
+    app: dev
+  ports:
+  - name: http
+    port: 7081
+    targetPort: 7081
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 7081
+    protocol: TCP
+---

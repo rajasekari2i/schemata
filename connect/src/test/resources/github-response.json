@@ -1,0 +1,28 @@
+{
+    "access_token": "access_token=token&expires_in=28800&refresh_token=token&refresh_token_expires_in=15811200&scope=&token_type=bearer",
+    "invalid_access_code": "error=bad_verification_code", 
+    "user_details": { "login": "user_name" },
+    "repo_details": {
+        "id": 1234,
+        "node_id": "R_Grb",
+        "name": "repo",
+        "full_name": "owner/repo",
+        "private": true,
+        "owner": { "login": "owner" },
+        "default_branch": "main"      
+    },
+    "user_repos": {
+        "items": [ { "name": "repoName" } ]
+    },
+    "pr_comment": { "id": "1" },
+    "branch_info": {
+        "object": { "sha": "df933fse93HHe0" }
+    },
+    "create_tree_object": { "sha": "df933fse93HHe0" },
+    "create_commit": { "sha": "df933fse93HHe0" },
+    "push_commit_to_branch": { "sha": "df933fse93HHe0" },
+    "pr_info": {
+        "number": 1,
+        "head": { "sha": "df933fse93HHe0" }
+    }
+}

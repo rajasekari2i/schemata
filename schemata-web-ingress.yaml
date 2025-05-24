@@ -1,0 +1,19 @@
+# Ingress to ensure we access through https
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: schemata-ui-ingress
+  namespace: schematalabs
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: ui-schemata-static-ip
+    networking.gke.io/managed-certificates: google-schemata-ui-cert
+    kubernetes.io/ingress.class: "gce"
+    networking.gke.io/v1beta1.FrontendConfig: frontend-redirect-config
+    kubernetes.io/ingress.allow-http: "false"
+spec:
+  defaultBackend:
+    service:
+      name: opsweb-service
+      port:
+        number: 3000

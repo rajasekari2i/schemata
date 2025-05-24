@@ -1,0 +1,48 @@
+syntax = "proto3";
+package com.schemata;
+
+import "schemata/protobuf/schemata.proto";
+
+message Brand {
+  option(org.schemata.schema.message_core).description = "This is the description of the Brand table";
+  option(org.schemata.schema.owner) = "Platform";
+  option(org.schemata.schema.domain) = "Core";
+  option(org.schemata.schema.schema_type) = ENTITY;
+  option(org.schemata.schema.status) = "Active";
+  option(org.schemata.schema.subscribers) = {
+    name: "Sales"
+  };
+
+  int64 id = 1
+  [(org.schemata.schema.field_core).description = "Unique identifier for Brand",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  string name = 2
+  [(org.schemata.schema.field_core).description = "Name of the Brand",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  bool is_active = 3
+  [(org.schemata.schema.field_core).description = "define the active status of the Brand. `true` == active; `false` = inactive`",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+}
+
+message BrandEvent {
+  option(org.schemata.schema.message_core).description = "This is the description of the brand activity table";
+  option(org.schemata.schema.owner) = "Platform";
+  option(org.schemata.schema.domain) = "Core";
+  option(org.schemata.schema.schema_type) = EVENT;
+  option(org.schemata.schema.status) = "Active";
+  Brand previous_brand_state = 1
+  [(org.schemata.schema.field_core).description = "Previous version of the Brand entity before the mutation",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  Brand current_brand_state = 2
+  [(org.schemata.schema.field_core).description = "Current version of the Brand entity before the mutation",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  org.schemata.schema.ActivityType activity_type = 3
+  [(org.schemata.schema.field_core).description = "Lifecycle event type for the Brand table",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = true,(org.schemata.schema.depricated) = true];
+
+}

@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://34.27.156.232:5432/opsbeach?serverTimeZone=UTC&characterEncoding=UTF-8
+    driver-class-name: org.postgresql.Driver
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASS}
+    hikari:
+      schema: ops_user
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: ops_user
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        ddl-auto: none
+        #format_sql: true
+        #show_sql: true
+  application:
+    name: user
+  smtp:
+    username: ${SMTP_USER_NAME}
+    password: ${SMTP_PASSWORD}  
+server:
+  port: 7080
+  servlet:
+    contextPath: /user
+flyway:
+  url: jdbc:postgresql://34.27.156.232:5432/opsbeach
+  schemas: PUBLIC
+  user: ${POSTGRES_USER}
+  password: ${POSTGRES_PASS}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

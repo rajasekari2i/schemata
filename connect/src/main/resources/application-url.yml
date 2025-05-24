@@ -1,0 +1,52 @@
+application:
+  web:
+    baseURL: https://api.aldefi.io/
+  user:
+    baseURL: https://api.aldefi.io/user/v1/
+    get-client-url: https://api.aldefi.io/user/v1/client/{id}
+    update-onboard-status: https://api.aldefi.io/user/v1/client/{id}?isOnboarded={isOnboarded}
+  analytics:
+    baseURL: https://api.aldefi.io/analytics/v1/
+jira:
+  get-user-uri: /rest/api/3/user/search
+  create-ticket-uri: /rest/api/3/issue
+  get-tickets-uri: /rest/api/3/search
+  get-project-uri: /rest/api/3/project/
+pager-duty:
+  incidents-url: https://api.pagerduty.com/incidents
+  services-url: https://api.pagerduty.com/services
+  incident-metrics-url: https://api.pagerduty.com/analytics/raw/incidents
+  log-entry-url: https://api.pagerduty.com/log_entries
+zendesk:
+  create-ticket-uri: /api/v2/tickets
+  ticket-count-uri: /api/v2/tickets/count
+  get-tickets-uri: /api/v2/search
+slack:
+  post-message-url: https://slack.com/api/chat.postMessage
+github:
+  construct-file-path: https://github.com/{repoFullName}/tree/{branch}/{filePath}
+  construct-pr-url: https://github.com/{repoFullName}/pull/{prNumber}
+  access_token: https://github.com/login/oauth/access_token
+  user: https://api.github.com/user
+  user_repos: https://api.github.com/search/repositories?q=user:{userId}
+  user_orgs: https://api.github.com/user/orgs
+  organization_repos: https://api.github.com/orgs/{orgName}/repos
+  process_event_audit: https://api.aldefi.io/connect/v1/event-audit/process?eventAuditId={eventAuditId}
+  tarball: https://api.github.com/repos/{FullName}/tarball/{branchName}
+  refresh-token: https://github.com/login/oauth/access_token
+  redirect-url: https://api.aldefi.io/connect/v1/github/signin/callback?smClientId={smClientId}
+  repos-redirect-url: https://schemata.aldefi.io/repos
+  login-url: https://github.com/login/oauth/authorize?scope=user&client_id={clientID}&redirect_uri={redirectURI}
+  download_file_url: https://api.github.com/repos/{owner}/{repo}/contents/{path}
+  create_branch_url: https://api.github.com/repos/{owner}/{repo}/git/refs
+  get_branch_info_url: https://api.github.com/repos/{owner}/{repo}/git/refs/heads/{branchName}
+  create_tree_object_url: https://api.github.com/repos/{owner}/{repo}/git/trees
+  create_commit_url: https://api.github.com/repos/{owner}/{repo}/git/commits
+  commit_file_url: https://api.github.com/repos/{owner}/{repo}/contents/{filePath}
+  create_pr_url: https://api.github.com/repos/{owner}/{repo}/pulls
+  repo-details: https://api.github.com/repos/{owner}/{repo}
+  create-repo-authenticated-user: https://api.github.com/user/repos
+  get-user-details: https://api.github.com/users/{userName}
+  push-commit-to-branch: https://api.github.com/repos/{owner}/{repo}/git/refs/heads/{branchName}
+  create-pr-comment: https://api.github.com/repos/{owner}/{repo}/issues/{pr_number}/comments
+  delete-comment: https://api.github.com/repos/{owner}/{repo}/issues/comments/{comment_id}

@@ -1,0 +1,34 @@
+#stage 1
+FROM maven:3.8.5 as builder
+
+WORKDIR /app
+
+ADD pom.xml .
+ADD shared-lib/pom.xml 	./shared-lib/pom.xml
+ADD user/pom.xml		./user/pom.xml
+ADD connect/pom.xml		./connect/pom.xml
+
+RUN mvn -pl shared-lib verify --fail-never
+ADD shared-lib ./shared-lib
+RUN mvn -pl shared-lib install
+
+RUN mvn -pl connect verify --fail-never
+ADD connect ./connect
+RUN mvn -pl shared-lib,connect package
+
+#stage 2
+FROM ubuntu:23.10
+WORKDIR /connect
+
+COPY --from=builder /app/connect/target/connect-1.0-SNAPSHOT.jar connect-1.0-SNAPSHOT.jar
+
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk && \
+    apt-get install -y protobuf-compiler && \
+    apt-get clean
+
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH $PATH:$JAVA_HOME/bin
+
+EXPOSE 7080
+CMD ["java", "-jar", "connect-1.0-SNAPSHOT.jar"]

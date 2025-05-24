@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: shared-lib
+  jackson:
+    parser:
+      allow-numeric-leading-zeros: true
+  connect:
+
+  user:
+    base-url: https://api.aldefi.io/user/v1/auth/
+    client-register: client/register
+    user-register: user/register
+    user: user
+    client: client
+    user-login: user/login
+    jwt-add: jwt
+    audit: audit
+    jwt-access: access
+  Private String:
+    host: localhost
+    port: 6379
+  threading-future-timeout: 10000
