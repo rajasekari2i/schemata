@@ -1,0 +1,44 @@
+syntax = "proto3";
+package com.schemata;
+
+import "schemata/protobuf/schemata.proto";
+
+message Category {
+  option(org.schemata.schema.message_core).description = "This is the description of the Category table";
+  option(org.schemata.schema.owner) = "Platform";
+  option(org.schemata.schema.domain) = "Core";
+  option(org.schemata.schema.schema_type) = ENTITY;
+  option(org.schemata.schema.status) = "Active";
+  int64 id = 1
+  [(org.schemata.schema.field_core).description = "Unique identifier for Category",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  string name = 2
+  [(org.schemata.schema.field_core).description = "Name of the Category",
+   (org.schemata.schema.is_pii) = true,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  bool is_active = 3
+  [(org.schemata.schema.field_core).description = "define the active status of the Category. `true` == active; `false` = inactive`",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+}
+
+message CategoryEvent {
+  option(org.schemata.schema.message_core).description = "This is the description of the Category activity table";
+  option(org.schemata.schema.owner) = "Platform";
+  option(org.schemata.schema.domain) = "Core";
+  option(org.schemata.schema.schema_type) = EVENT;
+  option(org.schemata.schema.status) = "Active";
+  Category previous_category_state = 1
+  [(org.schemata.schema.field_core).description = "Previous version of the Category entity before the mutation",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  Category current_category_state = 2
+  [(org.schemata.schema.field_core).description = "Current version of the Category entity before the mutation",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  org.schemata.schema.ActivityType activity_type = 3
+  [(org.schemata.schema.field_core).description = "Lifecycle event type for the Category table",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+}

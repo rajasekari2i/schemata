@@ -1,0 +1,44 @@
+# Ingress to ensure we access through https
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: schemata-api-ingress
+  namespace: schematalabs
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: api-schemata-static-ip
+    networking.gke.io/managed-certificates: schemata-api-cert
+    networking.gke.io/v1beta1.FrontendConfig: frontend-redirect-config
+    kubernetes.io/ingress.allow-http: "false"
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /user
+            pathType: Prefix
+            backend:
+              service:
+                name: user-app-service
+                port:
+                  number: 7080
+          - path: /connect
+            pathType: Prefix
+            backend:
+              service:
+                name: connect-app-service
+                port:
+                  number: 7081
+          - path: /virima
+            pathType: Prefix
+            backend:
+              service:
+                name: virima-app-service
+                port:
+                  number: 7084
+          # - path: /analytics
+          #   backend:
+          #     serviceName: analytics-app
+          #     servicePort: 7081
+
+# keep adding other service paths

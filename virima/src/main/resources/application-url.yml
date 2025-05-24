@@ -1,0 +1,3 @@
+application:
+  user:
+    baseURL: https://api.aldefi.io/user/v1/

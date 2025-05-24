@@ -1,0 +1,17 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: schemata-api-cert
+  namespace: schematalabs
+spec:
+  domains:
+    - api.aldefi.io
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: schemata-ui-cert
+  namespace: schematalabs
+spec:
+  domains:
+    - schemata.aldefi.io

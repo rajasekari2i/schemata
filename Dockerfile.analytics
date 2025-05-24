@@ -1,0 +1,27 @@
+#stage 1
+FROM maven:3.8.5 as builder
+
+WORKDIR /app
+ADD pom.xml .
+ADD shared-lib/pom.xml 	./shared-lib/pom.xml
+ADD user/pom.xml		./user/pom.xml
+ADD analytics/pom.xml	./analytics/pom.xml
+ADD connect/pom.xml		./connect/pom.xml
+ADD pipeline/pom.xml	./pipeline/pom.xml
+ADD virima/pom.xml	    ./virima/pom.xml
+
+RUN mvn -pl shared-lib verify --fail-never
+ADD shared-lib ./shared-lib
+RUN mvn -pl shared-lib install
+
+RUN mvn -pl analytics verify --fail-never
+ADD analytics ./analytics
+RUN mvn -pl shared-lib,analytics package
+
+#stage 2
+From openjdk:17
+WORKDIR /analytics
+
+COPY --from=builder /app/analytics/target/analytics-1.0-SNAPSHOT.jar analytics-1.0-SNAPSHOT.jar
+EXPOSE 7081
+CMD ["java", "-jar", "analytics-1.0-SNAPSHOT.jar"]

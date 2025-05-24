@@ -1,0 +1,36 @@
+#stage 1
+FROM maven:3.8.5 as builder
+
+WORKDIR /app
+
+ADD pom.xml .
+ADD shared-lib/pom.xml 	./shared-lib/pom.xml
+ADD user/pom.xml		./user/pom.xml
+ADD analytics/pom.xml	./analytics/pom.xml
+ADD connect/pom.xml		./connect/pom.xml
+ADD pipeline/pom.xml	./pipeline/pom.xml
+ADD virima/pom.xml	    ./virima/pom.xml
+
+RUN mvn -pl shared-lib verify --fail-never
+ADD shared-lib ./shared-lib
+RUN mvn -pl shared-lib install
+
+RUN mvn -pl virima verify --fail-never
+ADD virima ./virima
+RUN mvn -pl shared-lib,virima package
+
+#stage 2
+From ubuntu:23.10
+WORKDIR /virima
+
+COPY --from=builder /app/virima/target/virima-1.0-SNAPSHOT.jar virima-1.0-SNAPSHOT.jar
+
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk && \
+    apt-get clean
+
+ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH $PATH:$JAVA_HOME/bin
+
+EXPOSE 7084
+CMD ["java", "-jar", "virima-1.0-SNAPSHOT.jar"]

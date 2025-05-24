@@ -1,0 +1,42 @@
+steps:
+  - id: "tests"
+    name: gcr.io/cloud-builders/git
+    entrypoint: /bin/bash
+    args:
+      - -c
+      - |
+        echo "here we run all our unit tests"
+    waitFor: ['-']
+  - id: "replace tag"
+    name: gcr.io/cloud-builders/git
+    entrypoint: /bin/bash
+    args:
+      - -c
+      - |
+        sed -e "s/tag/"$SHORT_SHA"/g" ./connect/k8s_connect.yaml > ./connect/k8s_connect_latest.yaml
+    waitFor: ['tests']
+  - id: "build-connect"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-f", "Dockerfile.connect", "-t", "us-central1-docker.pkg.dev/prodenv1/schematalabs-connect-app/connect:$SHORT_SHA", "."]
+    waitFor: ["replace tag"]
+  - id: "push-connect"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "us-central1-docker.pkg.dev/prodenv1/schematalabs-connect-app/connect:$SHORT_SHA"]
+    waitFor: ["build-connect"]
+  - id: "terminate-connect"
+    name: "gcr.io/cloud-builders/kubectl"
+    args: [  "-n", "schematalabs", "scale", "deployment", "connect-app-deployment", "--replicas=0" ]
+    env:
+      - "CLOUDSDK_COMPUTE_REGION=us-central1"
+      - "CLOUDSDK_CONTAINER_CLUSTER=schematalabs"
+    waitFor: ["push-connect"]
+    # deploy container image to GKE.
+  - id: "deploy-connect"
+    name: "gcr.io/cloud-builders/gke-deploy"
+    args:
+      - run
+      - --filename=./connect/k8s_connect_latest.yaml
+      - --image=us-central1-docker.pkg.dev/prodenv1/schematalabs-connect-app/connect:$SHORT_SHA
+      - --location=us-central1
+      - --cluster=schematalabs
+    waitFor: ["terminate-connect", "push-connect"]

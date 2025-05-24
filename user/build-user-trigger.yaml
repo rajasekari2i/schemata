@@ -1,0 +1,35 @@
+steps:  
+- id: "tests"
+  name: gcr.io/cloud-builders/git
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      echo "here we run all our unit tests"
+  waitFor: ['-']
+- id: "replace tag"
+  name: gcr.io/cloud-builders/git
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      sed -e "s/tag/"$SHORT_SHA"/g" ./user/k8s_user.yaml > ./user/k8s_user_latest.yaml
+  waitFor: ['tests']
+- id: "build-user"
+  name: "gcr.io/cloud-builders/docker"
+  args: ["build", "-f", "Dockerfile.user", "-t", "us-central1-docker.pkg.dev/prodenv1/schematalabs-user-app/user:$SHORT_SHA", "."]
+  waitFor: ["replace tag"]
+- id: "push-user"
+  name: "gcr.io/cloud-builders/docker"
+  args: ["push", "us-central1-docker.pkg.dev/prodenv1/schematalabs-user-app/user:$SHORT_SHA"]
+  waitFor: ["build-user"]
+  # deploy container image to GKE.
+- id: "deploy-user"
+  name: "gcr.io/cloud-builders/gke-deploy"
+  args:
+  - run
+  - --filename=./user/k8s_user_latest.yaml
+  - --image=us-central1-docker.pkg.dev/prodenv1/schematalabs-user-app/user:$SHORT_SHA
+  - --location=us-central1
+  - --cluster=schematalabs
+  waitFor: ["push-user"]

@@ -1,0 +1,7 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: google-cert-for-analytics
+spec:
+  domains:
+    - app.opsbeach.com

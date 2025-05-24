@@ -1,0 +1,35 @@
+steps:
+  - id: "tests"
+    name: gcr.io/cloud-builders/git
+    entrypoint: /bin/bash
+    args:
+      - -c
+      - |
+        echo "here we run all our unit tests"
+    waitFor: ['-']
+  - id: "replace tag"
+    name: gcr.io/cloud-builders/git
+    entrypoint: /bin/bash
+    args:
+      - -c
+      - |
+        sed -e "s/tag/"$SHORT_SHA"/g" ./virima/k8s_virima.yaml > ./virima/k8s_virima_latest.yaml
+    waitFor: ['tests']
+  - id: "build-virima"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-f", "Dockerfile.virima", "-t", "us-central1-docker.pkg.dev/prodenv1/schematalabs-virima-app/virima:$SHORT_SHA", "."]
+    waitFor: ["replace tag"]
+  - id: "push-virima"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "us-central1-docker.pkg.dev/prodenv1/schematalabs-virima-app/virima:$SHORT_SHA"]
+    waitFor: ["build-virima"]
+    # deploy container image to GKE.
+  - id: "deploy-virima"
+    name: "gcr.io/cloud-builders/gke-deploy"
+    args:
+      - run
+      - --filename=./virima/k8s_virima_latest.yaml
+      - --image=us-central1-docker.pkg.dev/prodenv1/schematalabs-virima-app/virima:$SHORT_SHA
+      - --location=us-central1
+      - --cluster=schematalabs
+    waitFor: ["push-virima"]

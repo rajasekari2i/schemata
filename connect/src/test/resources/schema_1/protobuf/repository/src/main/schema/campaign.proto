@@ -1,0 +1,105 @@
+syntax = "proto3";
+package com.schemata;
+
+import "schemata/protobuf/schemata.proto";
+import "Product/product.proto";
+import "category.proto";
+import "google/protobuf/timestamp.proto";
+
+enum CampaignOrigin {
+  EMAIL = 0;
+  SOCIAL_MEDIA = 1;
+}
+
+message Campaign {
+  option(org.schemata.schema.message_core).description = "This is the description of the Campaign table";
+  option(org.schemata.schema.owner) = "Marketing";
+  option(org.schemata.schema.domain) = "Growth";
+  option(org.schemata.schema.schema_type) = ENTITY;
+  option(org.schemata.schema.status) = "Active";
+  option(org.schemata.schema.subscribers) = {
+    name: "customer team",
+    name: "customer teams"
+  };
+
+  int32 id = 1
+  [(org.schemata.schema.field_core).description = "Unique identifier for Campaign",
+   (org.schemata.schema.is_pii) = true,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  string name = 2
+  [(org.schemata.schema.field_core).description = "Name of the Campaign",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  bool is_active = 3
+  [(org.schemata.schema.field_core).description = "define the active status of the Campaign. `true` == active; `false` = inactive`",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+}
+
+message CampaignEvent {
+  option(org.schemata.schema.message_core).description = "This is the description of the Campaign activity table";
+  option(org.schemata.schema.owner) = "Marketing";
+  option(org.schemata.schema.domain) = "Growth";
+  option(org.schemata.schema.schema_type) = EVENT;
+  option(org.schemata.schema.status) = "Active";
+  Campaign previous_campaign_state = 1
+  [(org.schemata.schema.field_core).description = "Previous version of the Campaign entity before the mutation",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  Campaign current_campaign_state = 2
+  [(org.schemata.schema.field_core).description = "Current version of the Campaign entity before the mutation",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  org.schemata.schema.ActivityType activity_type = 3
+  [(org.schemata.schema.field_core).description = "Lifecycle event type for the Campaign table",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+}
+
+message CampaignCategoryTrackerEvent {
+  option(org.schemata.schema.message_core).description = "This is the description of the Campaign activity table";
+  option(org.schemata.schema.owner) = "Marketing";
+  option(org.schemata.schema.domain) = "Growth";
+  option(org.schemata.schema.schema_type) = EVENT;
+  option(org.schemata.schema.status) = "Active";
+  Campaign campaign = 1
+  [(org.schemata.schema.field_core).description = "Campaign entity",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  Category category = 2
+  [(org.schemata.schema.field_core).description = "Category of the targeted campaign",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  com.schemata.CampaignOrigin origin = 3
+  [(org.schemata.schema.field_core).description = "origin source of the campaign",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  google.protobuf.Timestamp timestamp = 4
+  [(org.schemata.schema.field_core).description = "Timestamp of the activity",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+}
+
+message CampaignProductTrackerEvent {
+  option(org.schemata.schema.message_core).description = "This is the description of the Campaign activity table";
+  option(org.schemata.schema.owner) = "Marketing";
+  option(org.schemata.schema.domain) = "Growth";
+  option(org.schemata.schema.schema_type) = EVENT;
+  option(org.schemata.schema.status) = "Active";
+  Campaign campaign = 1
+  [(org.schemata.schema.field_core).description = "Campaign entity",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  Product product = 2
+  [(org.schemata.schema.field_core).description = "Product of the targeted campaign",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  com.schemata.CampaignOrigin origin = 3
+  [(org.schemata.schema.field_core).description = "origin source of the campaign",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  google.protobuf.Timestamp timestamp = 4
+  [(org.schemata.schema.field_core).description = "Timestamp of the activity",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+}

@@ -1,0 +1,104 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: schematalabs
+---
+#secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: user-app-secret
+  namespace: schematalabs
+type: Opaque
+data:
+  POSTGRES_USER: cG9zdGdyZXM=
+  POSTGRES_PASS: T3BzQmVAY2gxQDMk
+  SMTP_USER_NAME: c2NoZW1hdGFsYWJzQGdtYWlsLmNvbQ==
+  SMTP_PASSWORD: cGl2cWh6c2J6b2hyb3V4cA==
+---
+# Deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-app-deployment
+  namespace: schematalabs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dev
+  template:
+    metadata:
+      labels:
+        app: dev
+    spec:
+      containers:
+      - name: user-app
+        image: us-central1-docker.pkg.dev/prodenv1/schematalabs-user-app/user:tag
+        ports:
+        - containerPort: 7080   
+        resources:
+          limits:
+            cpu: 500m
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            memory: 2Gi
+        env:
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: user-app-secret
+                key: POSTGRES_USER
+          - name: POSTGRES_PASS
+            valueFrom:
+              secretKeyRef:
+                name: user-app-secret
+                key: POSTGRES_PASS
+          - name: SMTP_USER_NAME
+            valueFrom:
+              secretKeyRef:
+                name: user-app-secret
+                key: SMTP_USER_NAME
+          - name: SMTP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: user-app-secret
+                key: SMTP_PASSWORD
+---
+# BackendConfig to do health check so above deployment will become ready
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: health-check-config-user
+  namespace: schematalabs
+spec:
+  healthCheck:
+    checkIntervalSec: 30
+    port: 7080
+    type: HTTP #case-sensitive
+    requestPath: /user/actuator/health
+---    
+# Service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-app-service
+  namespace: schematalabs
+  annotations:
+    cloud.google.com/backend-config: '{"default": "health-check-config-user"}' 
+spec:
+  type: ClusterIP  
+  selector:
+    app: dev
+  ports:
+  - name: http
+    port: 7080
+    targetPort: 7080
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 7080
+    protocol: TCP
+---

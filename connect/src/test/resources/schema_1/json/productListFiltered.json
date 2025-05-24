@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/schemas/browsing/productListFiltered.json",
+  "title": "ProductListFiltered",
+  "description": "This event is triggered whenever a visitor filters a list or category of products on your website or app. The following properties are supported by this event",
+  "type": "object",
+  "properties": {
+        "listId": {
+            "type": "string",
+            "description": "Contains the name of the product list being viewed"
+        },
+        "category": {
+            "type": ["string", "null"],
+            "description": "Contains the category of the product being viewed"
+        },
+        "filters": {
+            "type": "array",
+            "description": "Contain the product filters that the customer has applied",
+            "items": { "$ref": "#/definitions/filter"}
+        },
+        "products": {
+            "type": "array",
+            "description": "Contains the array of products displayed in the product list",
+            "items": { "$ref": "http://example.com/schemas/product.json"}
+        },
+        "tag": {
+            "description": "Tags for the product",
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "string",
+                    "enum": ["faasi"]
+                }
+            ],
+            "uniqueItems": true
+        },
+        "options": {
+            "description": "Options of the product",
+            "type": "array",
+            "items": {
+                "oneOf": [
+                  {
+                      "type": "null"
+                  },
+                  {
+                      "type": "string"
+                  }
+                ]
+            }
+        },
+        "dimension": {
+                "title": "Dimension",
+                "type": "object",
+                "properties": {
+                "length": {
+                    "type": "number"
+                },
+                "width": {
+                    "type": "number"
+                },
+                "height": {
+                    "type": "number"
+                }
+                }
+        },
+        "brands": {
+            "type": "array",
+            "items": { "type": "string" }
+        }
+  },
+  "required": ["listId", "category", "filters", "products"],
+  "definitions": {
+      "filter": {
+          "type": "object",
+          "properties": {
+              "type": {
+                  "type": "string",
+                  "description": "Contains the ID of the filter type that the customer is using"
+              },
+              "value": {
+                  "type": "string",
+                  "description": "Contains the ID of the selection chosen by the customer"
+              }
+          },
+          "required": ["type", "value"]
+      }
+  }
+}

@@ -1,0 +1,36 @@
+steps:  
+- id: "tests"
+  name: gcr.io/cloud-builders/git
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      echo "here we run all our unit tests"
+      ls -lrt
+  waitFor: ['-']
+- id: "replace tag"
+  name: gcr.io/cloud-builders/git
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      sed -e "s/tag/"$SHORT_SHA"/g" ./workflow/slack/k8s_resource.yaml > ./workflow/slack/k8s_resource_latest.yaml      
+  waitFor: ['tests']
+- id: "build-slack"
+  name: "gcr.io/cloud-builders/docker"
+  args: ["build", "-t", "gcr.io/just-site-344717/slack-app:$SHORT_SHA", "./workflow/slack/"]
+  waitFor: ["replace tag"]
+- id: "push-slack"
+  name: "gcr.io/cloud-builders/docker"
+  args: ["push", "gcr.io/just-site-344717/slack-app:$SHORT_SHA"]
+  waitFor: ["build-slack"]
+  # deploy container image to GKE
+- id: "deploy-slack"
+  name: "gcr.io/cloud-builders/gke-deploy"
+  args:
+  - run
+  - --filename=./workflow/slack/k8s_resource_latest.yaml
+  - --image=gcr.io/just-site-344717/slack-app:$SHORT_SHA
+  - --location=us-east1
+  - --cluster=opsconnect-cluster
+  waitFor: ["push-slack"]

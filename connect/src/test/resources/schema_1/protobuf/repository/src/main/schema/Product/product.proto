@@ -1,0 +1,59 @@
+syntax = "proto3";
+package com.schemata;
+
+import "schemata/protobuf/schemata.proto";
+import "Brand/brand.proto";
+import "category.proto";
+
+message Product {
+  option(org.schemata.schema.message_core).description = "This is the description of the Product table";
+  option(org.schemata.schema.owner) = "Platform";
+  option(org.schemata.schema.domain) = "Core";
+  option(org.schemata.schema.schema_type) = ENTITY;
+  option(org.schemata.schema.status) = "Active";
+  option(org.schemata.schema.subscribers) = {
+    name: "marketing team",
+    name: "sales team"
+  };
+
+  int32 id = 1
+  [(org.schemata.schema.field_core).description = "Unique identifier for Product",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  string name = 2
+  [(org.schemata.schema.field_core).description = "Name of the Product",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  Category category = 3
+  [(org.schemata.schema.field_core).description = "Category name of the product",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  Brand brand = 4
+  [(org.schemata.schema.field_core).description = "Brand name of the product",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  bool is_active = 5
+  [(org.schemata.schema.field_core).description = "define the active status of the Product. `true` == active; `false` = inactive`",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+}
+
+message ProductEvent {
+  option(org.schemata.schema.message_core).description = "This is the description of the Product activity table";
+  option(org.schemata.schema.owner) = "Platform";
+  option(org.schemata.schema.domain) = "Core";
+  option(org.schemata.schema.schema_type) = EVENT;
+  option(org.schemata.schema.status) = "Active";
+  Product previous_brand_state = 1
+  [(org.schemata.schema.field_core).description = "Previous version of the Product entity before the mutation",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  Product current_brand_state = 2
+  [(org.schemata.schema.field_core).description = "Current version of the Product entity before the mutation",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+  org.schemata.schema.ActivityType activity_type = 3
+  [(org.schemata.schema.field_core).description = "Lifecycle event type for the Product table",
+   (org.schemata.schema.is_pii) = false,(org.schemata.schema.is_classified) = false,(org.schemata.schema.depricated) = false];
+
+}

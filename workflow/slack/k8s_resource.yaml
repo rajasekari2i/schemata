@@ -1,0 +1,91 @@
+# Secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: slack-app-secret
+type: Opaque
+stringData:
+  SLACK_VERIFICATION_TOKEN: ""
+  SLACK_BOT_TOKEN: ""
+  SIGN_IN_SECRET: ""
+  CLIENT_ID: ""
+  CLIENT_SECRET: ""
+  CONNECT_ACCESS_TOKEN: "" 
+  CONNECT_BASE_URL: ""
+---
+# Deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slack-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dev
+  template:
+    metadata:
+      labels:
+        app: dev
+    spec:
+      containers:
+      - name: slack-app        
+        image: gcr.io/just-site-344717/slack-app:tag
+        ports:
+        - containerPort: 8000
+        env:
+        - name: SLACK_VERIFICATION_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: slack-app-secret
+              key: SLACK_VERIFICATION_TOKEN
+        - name: SLACK_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: slack-app-secret
+              key: SLACK_BOT_TOKEN
+        - name: SIGN_IN_SECRET 
+          valueFrom: 
+            secretKeyRef:
+              name: slack-app-secret
+              key: SIGN_IN_SECRET
+        - name: CLIENT_ID 
+          valueFrom: 
+            secretKeyRef:
+              name: slack-app-secret
+              key: CLIENT_ID
+        - name: CLIENT_SECRET 
+          valueFrom: 
+            secretKeyRef:
+              name: slack-app-secret
+              key: CLIENT_SECRET
+        - name: CONNECT_ACCESS_TOKEN 
+          valueFrom: 
+            secretKeyRef:
+              name: slack-app-secret
+              key: CONNECT_ACCESS_TOKEN
+        - name: CONNECT_BASE_URL 
+          valueFrom: 
+            secretKeyRef:
+              name: slack-app-secret
+              key: CONNECT_BASE_URL
+---
+# Service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: slack-app-service
+spec:
+  type: NodePort  
+  selector:
+    app: dev
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  - name: https
+    port: 443
+    targetPort: 8000
+    protocol: TCP
+---

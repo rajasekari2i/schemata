@@ -1,0 +1,88 @@
+response-messages:
+  success:
+    1001: Created successfully {0} ..!
+    1002: Updated successfully {0} ..!
+    1003: Fetched successfully ..!
+    1004: Deleted successfully {0} ..!
+    1005: Fetched all data successfully..!
+    1006: OTP sent successfully..!
+  error:
+    5000: Unexcepted internal server error..!
+    5001: Request validation failed - {0}
+    5002: Invalid file {0} provided
+    5003: Bad Request {0}
+    5004: Access Token Invalid, Access Token is {0}
+    5005: Unable to verify access token
+    5006: Invalid Access Token.
+    5007: Invalid User.
+    5008: Invalid Password.
+    5009: Error while generating token.
+    5010: Invalid Refresh Token.
+    5011: Invalid OTP.
+    5012: Invalid verification otp token.
+    5013: Unauthorized user.
+    5014: Rest app 2 app call.
+    5015: Only Owner of the account can update a member but not oneself.
+    5016: Record Not Found - {0}.
+    5017: Invalid data while parse JSON Response.
+    5018: Error on API response - {0}
+    5019: Insufficient Privileges.
+    5020: Saving Preference is not updated.
+    5021: Input Stream exception.
+    5022: Malformed URL exception.
+    5023: Invalid Tenant.
+    5024: X-TenantId not present in the Request Header.
+    5025: Authentication PreCondition - {0}
+    5026: User already exists. Please login.
+    5027: User %s does not exist
+    5028: Error in creating CSV file.
+    5029: You have been automatically logged out from the system.
+    5030: Unable to close {0} connection.
+    5031: Budget amount for {0} category is not in-sync with the {1}% share out of total budget amount.
+    5032: Actual transaction amount {0} does not match splitted transaction amount {1}
+    5033: Category wise Budget should be set before Merchant level budget for the user.
+    5034: Invalid Login Mode
+    5035: Completable future Async error - {0}
+    5036: Client already exists.
+    5037: URL encoded error
+    5038: Record not found {1} Id - {0}
+    5039: Invalid {0} Id
+    5040: Already exists - {0}
+    5041: Project Id, Issue Type, description, reporter Id and Summary should not be empty or null
+    5042: Invalid Issue Type
+    5043: Issue type is a Sub-task but parent issue key not specified.
+    5044: Issue type is Epic but Epic name is not specified.
+    5045: Invalid Task Type - {0}
+    5046: Invalid Service Type - {0}
+    5047: Domin Not Found - {0} - messaage - {1}
+    5048: Invalid Action Type - {0}
+    5049: Channel not found - {0}
+    5050: Not in channel - {0}
+    5051: Something went wrong - {0}
+    5052: File Not Found - {0}
+    5053: Invalid Repo Type - {0}
+    5054: Table Already Modified - {0}
+    5055: Table '{0}' Already Modified In PR - {1}
+    5056: Table Validation Error - {0}
+    5057: Table name changed not allowed (from -{0} to - {1})
+    5058: Table namespace changed not allowed (from -{0} to - {1})
+    5059: Json Schema Id changed not allowed (from -{0} to - {1})
+    5060: Field deleted not allowed
+    5061: Field name {0} changed not allowed
+    5062: Field DataType updation not allowed for field - {0}
+    5063: Field {0} of table - {1} has error
+    5064: Field datatype updation for union field - {0}
+    5065: Element type of array field - {0}
+    5066: Value type of Map field - {0}
+    5067: Changes of Schema {0} is not present in file - {1}
+    5068: Changes of Schema {0} of file1 - {1} and file2 - {2} are not same
+    5069: Field Validation Error - {0}
+    5070: -{0} in Table {1}
+    5071: -{0} in {1} of Table {2}
+    5072: Unrecognized Column In CSV - {0} - in File - {1}
+    5073: Repo Organization Not Found
+    5074: OTP expired. login again.
+    5075: Error Occured while creating Task on Gcloud - {0}
+    5076: Table metadata owner changed not allowed from {0} to {1} in table - {2}
+    5077: Table metadata domain changed not allowed from {0} to {1} in table - {2}
+    5078: Invalid Pr Status or Empty - {0}

@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://104.197.194.76:5432/opsbeach?serverTimeZone=UTC&characterEncoding=UTF-8
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: OpsBe@ch1@3$
+    hikari:
+      schema: analytics
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: analytics
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        ddl-auto: none
+  application:
+    name: analytics
+  threading-future-timeout: 10000
+  user:
+    base-url: https://api.aldefi.io/user/v1/auth/
+    client-register: client/register
+    user-register: user/register
+    user: user
+    client: client
+    user-login: user/login
+    jwt-add: jwt
+    audit: audit
+    jwt-access: access
+server:
+  port: 6080
+  servlet:
+    contextPath: /analytics
