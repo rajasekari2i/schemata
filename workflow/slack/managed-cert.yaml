@@ -1,8 +1,0 @@
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: google-managed-cert
-spec:
-  domains:
-    - hola.opsbeach.com
-    - halo.opsbeach.com

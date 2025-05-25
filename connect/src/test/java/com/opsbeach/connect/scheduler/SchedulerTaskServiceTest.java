@@ -1,16 +1,12 @@
 package com.opsbeach.connect.scheduler;
 
 import com.opsbeach.connect.task.entity.Task;
-import com.opsbeach.connect.zendesk.service.ZendeskService;
 import com.opsbeach.sharedlib.exception.InvalidDataException;
 import com.opsbeach.sharedlib.response.ResponseMessage;
 import com.opsbeach.sharedlib.utils.DateUtil;
 import com.opsbeach.connect.core.enums.ServiceType;
 import com.opsbeach.connect.core.enums.TaskType;
 import com.opsbeach.connect.github.service.GitHubService;
-import com.opsbeach.connect.jira.service.JiraService;
-import com.opsbeach.connect.metrics.service.MetricsService;
-import com.opsbeach.connect.pagerduty.service.PagerDutyProcessor;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,9 +32,6 @@ public class SchedulerTaskServiceTest {
     @Mock
     TaskScheduler scheduler;
 
-    @Mock
-    PagerDutyProcessor pagerDutyService;
-
     SchedulerTaskService schedulerTaskService;
 
     @Mock
@@ -48,20 +41,11 @@ public class SchedulerTaskServiceTest {
     ResponseMessage responseMessage;
 
     @Mock
-    JiraService jiraService;
-
-    @Mock
-    MetricsService metricsService;
-
-    @Mock
-    ZendeskService zendeskService;
-
-    @Mock
     GitHubService gitHubService;
 
     @BeforeEach
     public void setup() {
-        schedulerTaskService = new SchedulerTaskService(scheduler, pagerDutyService, responseMessage, jiraService, zendeskService, metricsService, gitHubService);
+        schedulerTaskService = new SchedulerTaskService(scheduler, responseMessage, gitHubService);
     }
 
     @Test
@@ -87,24 +71,8 @@ public class SchedulerTaskServiceTest {
     public void sendRequestTest() {
         assertThrows(InvalidDataException.class, () -> schedulerTaskService.sendRequest(ServiceType.FRESH_DESK, null, null));
 
-        schedulerTaskService.sendRequest(ServiceType.JIRA, TaskType.GET_TICKETS, 1L);
-        assertThrows(InvalidDataException.class, () -> schedulerTaskService.sendRequest(ServiceType.JIRA, TaskType.CREATE_TICKET, 1L));
-
-        schedulerTaskService.sendRequest(ServiceType.ZENDESK, TaskType.GET_TICKETS, 1L);
-        assertThrows(InvalidDataException.class, () -> schedulerTaskService.sendRequest(ServiceType.ZENDESK, TaskType.CREATE_TICKET, 1L));
-
-        schedulerTaskService.sendRequest(ServiceType.METRICS, TaskType.TICKET_METRICS, 1L);
-        schedulerTaskService.sendRequest(ServiceType.METRICS, TaskType.INCIDENT_METRICS, 1L);
-        assertThrows(InvalidDataException.class, () -> schedulerTaskService.sendRequest(ServiceType.METRICS, TaskType.CREATE_TICKET, 1L));
-
         schedulerTaskService.sendRequest(ServiceType.GITHUB, TaskType.RENEWAL_ACCESS_TOKEN, 1L);
         assertThrows(InvalidDataException.class, () -> schedulerTaskService.sendRequest(ServiceType.GITHUB, TaskType.CREATE_TICKET, 1L));
-
-        schedulerTaskService.sendRequest(ServiceType.PAGER_DUTY, TaskType.INCIDENTS, 1L);
-        schedulerTaskService.sendRequest(ServiceType.PAGER_DUTY, TaskType.SERVICES, 1L);
-        schedulerTaskService.sendRequest(ServiceType.PAGER_DUTY, TaskType.INCIDENT_METRICS, 1L);
-        schedulerTaskService.sendRequest(ServiceType.PAGER_DUTY, TaskType.INCIDENT_LOG_ENTRY, 1L);
-        assertThrows(InvalidDataException.class, () -> schedulerTaskService.sendRequest(ServiceType.PAGER_DUTY, TaskType.CREATE_TICKET, 1L));
     }
 
     @Test

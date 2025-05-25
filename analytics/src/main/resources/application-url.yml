@@ -1,5 +1,0 @@
-application:
-  connect:
-    baseURL: http://localhost:9080/connect/v1/
-  analytics:
-    baseURL: http://localhost:5080/analytics/v1/

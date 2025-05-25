@@ -17,6 +17,7 @@ public class SchemaRepositoryImpl implements SchemaRepository {
     private EntityManager entityManager;
 
     // get schema by schema name
+    @SuppressWarnings("unchecked")
     @Override
     public List<RedshiftDto> getSchemaByName(String schemaName) {
         List<RedshiftDto> schemaDtos = new ArrayList<>();

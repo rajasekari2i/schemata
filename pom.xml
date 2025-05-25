@@ -16,10 +16,7 @@
     <modules>
         <module>shared-lib</module>
         <module>user</module>
-        <module>analytics</module>
         <module>connect</module>
-        <module>virima</module>
-        <module>pipeline</module>
     </modules>
 
 

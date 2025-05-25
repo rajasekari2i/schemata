@@ -20,7 +20,6 @@ import com.opsbeach.connect.core.enums.ServiceType;
 import com.opsbeach.connect.task.dto.ConnectDto;
 import com.opsbeach.connect.task.service.ConnectService;
 import com.opsbeach.sharedlib.response.SuccessResponse;
-import com.opsbeach.sharedlib.security.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 

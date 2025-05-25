@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.opsbeach.connect.task.dto.TaskDto;
 import com.opsbeach.connect.task.service.TaskService;
-import com.opsbeach.connect.zendesk.service.ZendeskService;
 import com.opsbeach.sharedlib.response.SuccessResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -25,8 +24,6 @@ public class TaskController {
     
     private final TaskService taskService;
 
-    private final ZendeskService zendeskService;
-
     @Transactional
     @PostMapping
     public SuccessResponse<TaskDto> add(@RequestBody TaskDto taskdDto) {
@@ -37,11 +34,6 @@ public class TaskController {
     @GetMapping
     public SuccessResponse<List<TaskDto>> getAll() {
         return SuccessResponse.statusOk(taskService.getAll());
-    }
-
-    @PostMapping("/{id}")
-    public SuccessResponse<TaskDto> find(@PathVariable("id") Long id) {
-        return SuccessResponse.statusCreated(zendeskService.getTickets(id));
     }
 
     @DeleteMapping("{id}")
