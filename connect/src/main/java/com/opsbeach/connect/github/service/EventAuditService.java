@@ -1,36 +1,25 @@
 package com.opsbeach.connect.github.service;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.config.annotation.AlreadyBuiltException;
 import org.springframework.stereotype.Service;
 
-import com.google.cloud.tasks.v2.HttpRequest;
-import com.opsbeach.connect.core.enums.AuthType;
 import com.opsbeach.connect.core.specification.IdSpecifications;
 import com.opsbeach.connect.core.utils.Constants;
 import com.opsbeach.connect.github.dto.EventAuditDto;
 import com.opsbeach.connect.github.entity.EventAudit;
 import com.opsbeach.connect.github.repository.EventAuditRepository;
 import com.opsbeach.connect.schemata.processor.protobuf.ProtoSchema;
-import com.opsbeach.connect.schemata.validate.Status;
 import com.opsbeach.sharedlib.exception.ErrorCode;
-import com.opsbeach.sharedlib.exception.GoogleCloudException;
 import com.opsbeach.sharedlib.exception.RecordNotFoundException;
 import com.opsbeach.sharedlib.response.ResponseMessage;
 import com.opsbeach.sharedlib.security.SecurityUtil;
-import com.opsbeach.sharedlib.service.GoogleCloudService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,8 +35,6 @@ public class EventAuditService {
 
     private final IdSpecifications<EventAudit> eventAuditSpecifications;
 
-    private final GoogleCloudService googleCloudService;
-
     @Lazy
     @Autowired
     private ProtoSchema protoSchema;
@@ -59,9 +46,6 @@ public class EventAuditService {
     @Lazy
     @Autowired
     private GitHubService gitHubService;
-
-    @Value("${github.process_event_audit}")
-    private String processEventAuditUrl;
 
     public EventAuditDto add(EventAuditDto eventAuditDto) {
         var eventAudit = addModel(eventAuditDto.toDomain(eventAuditDto));
@@ -108,29 +92,11 @@ public class EventAuditService {
         return eventAuditRepository.save(eventAudit);
     }
 
-    public String pushEventAuditIdToTask(List<Long> eventAuditIds) {
-        String url = processEventAuditUrl;
-        try {
-            List<HttpRequest> requests = new ArrayList<>(eventAuditIds.size());
-            for (Long eventAuditId : eventAuditIds) {
-                log.info("Creating Request for Event Audit: " + eventAuditId);
-                // Construct the task body.
-                Map<String, String> headerMap = new HashMap<>();
-                headerMap.put(HttpHeaders.AUTHORIZATION, AuthType.BEARER.getKey() + " " + SecurityUtil.getAccessToken());
-                headerMap.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-                HttpRequest request = HttpRequest.newBuilder()
-                        .setHttpMethod(com.google.cloud.tasks.v2.HttpMethod.POST)
-                        .setUrl(url.replace("{eventAuditId}", eventAuditId.toString()))
-                        .putAllHeaders(headerMap)
-                        .build();
-                requests.add(request);
-            }
-            // Instead of using google cloud queue need to use inbuild local Job scheduling mechanism.
-            googleCloudService.pushRequestInTask(requests);
-        } catch (IOException e) {
-            throw new GoogleCloudException(ErrorCode.CLOUD_TASK_CREATION_ERROR, responseMessage.getErrorMessage(ErrorCode.CLOUD_TASK_CREATION_ERROR, e.getMessage()));
+    @Async
+    public void processEventAuditsAsync(List<Long> eventAuditIds) {
+        for (Long eventAuditId : eventAuditIds) {
+            processEventAudit(eventAuditId);
         }
-        return Status.SUCCESS.name();
     }
 
     public boolean processEventAudit(Long eventAuditId) {

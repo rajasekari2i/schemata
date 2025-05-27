@@ -190,8 +190,8 @@ public class ClientRepoService {
         }
         eventAudits = eventAuditService.addAll(eventAudits);
         var ids = eventAudits.stream().map(EventAudit::getId).toList();
-        // add this list of event audit IDs in google TASK.
-        return eventAuditService.pushEventAuditIdToTask(ids);
+        eventAuditService.processEventAuditsAsync(ids);
+        return "SUCCESS";
     }
 
     private EventAudit createEventAudit(String repo, GitHubDto gitHubDto) {
@@ -230,7 +230,7 @@ public class ClientRepoService {
         var eventAudit = EventAudit.builder().eventId(clientRepo.getId()).type(EventAudit.Type.REPOSITORY_INITIAL_PULL).clientName(clientDto.getName())
                          .status(EventAudit.Status.PENDING).build();
         eventAuditService.addModel(eventAudit);
-        eventAuditService.processEventAudit(eventAudit.getId());
+        eventAuditService.processEventAuditsAsync(List.of(eventAudit.getId()));
         return "SUCCESS";
     }
 

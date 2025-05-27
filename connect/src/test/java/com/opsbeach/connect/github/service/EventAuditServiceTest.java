@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -35,11 +33,9 @@ import com.opsbeach.connect.github.dto.EventAuditDto;
 import com.opsbeach.connect.github.entity.EventAudit;
 import com.opsbeach.connect.github.entity.EventAudit.Type;
 import com.opsbeach.connect.github.repository.EventAuditRepository;
-import com.opsbeach.connect.schemata.validate.Status;
 import com.opsbeach.connect.task.dto.ConnectDto;
 import com.opsbeach.connect.task.service.ConnectService;
 import com.opsbeach.sharedlib.dto.UserDto;
-import com.opsbeach.sharedlib.exception.GoogleCloudException;
 import com.opsbeach.sharedlib.exception.RecordNotFoundException;
 import com.opsbeach.sharedlib.exception.SchemaParserException;
 import com.opsbeach.sharedlib.response.ResponseMessage;
@@ -145,16 +141,6 @@ public class EventAuditServiceTest {
             when(eventAuditRepository.save(any(EventAudit.class))).thenReturn(eventAudit);
         response = eventAuditService.updateStatus(1L, EventAudit.Status.COMPLETED);
         assertEquals(EventAudit.Status.COMPLETED, response.getStatus());
-    }
-
-    @Test
-    public void pushEventAuditIdToTaskTest() throws IOException {
-        ReflectionTestUtils.setField(eventAuditService, "processEventAuditUrl", "processEventAuditUrl");
-        mockApplicationUser();
-        assertEquals(Status.SUCCESS.name(), eventAuditService.pushEventAuditIdToTask(List.of(1L)));
-
-        Mockito.doThrow(IOException.class).when(googleCloudService).pushRequestInTask(any());
-        assertThrows(GoogleCloudException.class, () -> eventAuditService.pushEventAuditIdToTask(List.of(1L)));
     }
 
     @Test

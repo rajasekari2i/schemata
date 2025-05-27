@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -202,7 +201,6 @@ public class ClientRepoServiceTest {
             when(app2AppService.setHeaders(anyMap(), eq(null))).thenReturn(null);
             when(app2AppService.httpGet(anyString(), eq(null), eq(ClientDto.class))).thenReturn(ClientDto.builder().name("client").build());
             when(eventAuditService.addAll(ArgumentMatchers.<List<EventAudit>>any())).thenReturn(List.of(eventAudit));
-            when(eventAuditService.pushEventAuditIdToTask(anyList())).thenReturn(Status.SUCCESS.name());
         var response = clientRepoService.add(createGitHubDto());
         assertEquals(response, Status.SUCCESS.name());
     }
