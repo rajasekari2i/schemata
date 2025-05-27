@@ -190,7 +190,7 @@ public class ClientRepoService {
         }
         eventAudits = eventAuditService.addAll(eventAudits);
         var ids = eventAudits.stream().map(EventAudit::getId).toList();
-        eventAuditService.processEventAuditsAsync(ids);
+        eventAuditService.processEventAuditsAsync(ids, SecurityUtil.getUserDetails());
         return "SUCCESS";
     }
 
@@ -208,7 +208,8 @@ public class ClientRepoService {
 
     public String uploadRepo(MultipartFile repoMultipartFile, RepoType repoType) {
         var clientDto = getClient();
-        var storagePath = repoStoragePath+"/"+clientDto.getName();
+        var repoFullName = FileUtil.getBaseFileName(repoMultipartFile.getOriginalFilename());
+        var storagePath = repoStoragePath+"/"+clientDto.getName()+"/"+repoFullName;
         File file = new File(storagePath);
         if (!file.exists() || !file.isDirectory()) {
             file.mkdirs();
@@ -222,15 +223,18 @@ public class ClientRepoService {
             e.printStackTrace();
             throw new InternalError("File not uploaded");
         }
-        var repoName = FileUtil.getBaseFileName(repoMultipartFile.getOriginalFilename());
-        var filepath = storagePath+"/"+repoMultipartFile.getOriginalFilename();
-        var clientRepo = ClientRepo.builder().name(repoName).fullName(repoName).status(ClientRepo.Status.ACTIVE)
+        var filepath = StringUtil.constructStringEmptySeparator(storagePath,"/",repoMultipartFile.getOriginalFilename());
+        if (findByFullName(repoFullName).isEmpty() == false) {
+            FileUtil.deleteFile(filepath);
+            throw new AlreadyExistException(ErrorCode.ALREADY_EXISTS, responseMessage.getErrorMessage(ErrorCode.ALREADY_EXISTS, repoFullName));
+        }
+        var clientRepo = ClientRepo.builder().name(repoFullName).fullName(repoFullName).status(ClientRepo.Status.ACTIVE)
                                    .repoType(repoType).repositorySource(RepoSource.LOCAL).folderPath(filepath).build();
         clientRepo = addModel(clientRepo);
         var eventAudit = EventAudit.builder().eventId(clientRepo.getId()).type(EventAudit.Type.REPOSITORY_INITIAL_PULL).clientName(clientDto.getName())
                          .status(EventAudit.Status.PENDING).build();
         eventAuditService.addModel(eventAudit);
-        eventAuditService.processEventAuditsAsync(List.of(eventAudit.getId()));
+        eventAuditService.processEventAuditsAsync(List.of(eventAudit.getId()), SecurityUtil.getUserDetails());
         return "SUCCESS";
     }
 

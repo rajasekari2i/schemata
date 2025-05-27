@@ -7,6 +7,7 @@ import com.opsbeach.sharedlib.exception.ErrorCode;
 import com.opsbeach.sharedlib.exception.UnAuthorizedException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +44,10 @@ public class SecurityUtil {
     public static void setClientId(Long clientId) {
         var userDto = getLoggedInUserDetail();
         userDto.setClientId(clientId);
+        setAuthenticationContext(userDto);
+    }
+
+    public static void setCurrentLoggedInUser(UserDto userDto) {
         setAuthenticationContext(userDto);
     }
 

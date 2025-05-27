@@ -35,7 +35,7 @@ CREATE TABLE connect (
   refresh_token bytea,
   user_name character varying COLLATE pg_catalog."default",
   repo_organization character varying COLLATE pg_catalog."default",
-  channel_id bytea;
+  channel_id bytea
 );
 
 CREATE TABLE sla (
@@ -69,7 +69,7 @@ CREATE TABLE client_repo
   default_branch character varying COLLATE pg_catalog."default",
   repo_type varchar(25) NOT NULL,
   repository_source character varying COLLATE pg_catalog."default",
-  folder_path character varying COLLATE pg_catalog."default";
+  folder_path character varying COLLATE pg_catalog."default",
   connect_id bigint,
   CONSTRAINT client_repo_connect_id_fkey FOREIGN KEY (connect_id) REFERENCES connect(id) MATCH SIMPLE
         ON UPDATE NO ACTION

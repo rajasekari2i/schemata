@@ -16,6 +16,7 @@ import com.opsbeach.connect.github.dto.EventAuditDto;
 import com.opsbeach.connect.github.entity.EventAudit;
 import com.opsbeach.connect.github.repository.EventAuditRepository;
 import com.opsbeach.connect.schemata.processor.protobuf.ProtoSchema;
+import com.opsbeach.sharedlib.dto.UserDto;
 import com.opsbeach.sharedlib.exception.ErrorCode;
 import com.opsbeach.sharedlib.exception.RecordNotFoundException;
 import com.opsbeach.sharedlib.response.ResponseMessage;
@@ -93,7 +94,8 @@ public class EventAuditService {
     }
 
     @Async
-    public void processEventAuditsAsync(List<Long> eventAuditIds) {
+    public void processEventAuditsAsync(List<Long> eventAuditIds, UserDto userDto) {
+        SecurityUtil.setCurrentLoggedInUser(userDto);
         for (Long eventAuditId : eventAuditIds) {
             processEventAudit(eventAuditId);
         }
@@ -101,6 +103,7 @@ public class EventAuditService {
 
     public boolean processEventAudit(Long eventAuditId) {
         var eventAudit = getModel(eventAuditId);
+        SecurityUtil.setClientId(eventAudit.getClientId());
         log.info("CALLED SUCCESSFULLY FROM TASK OF EVENT ID ="+eventAuditId.toString());
         SecurityUtil.setClientId(eventAudit.getClientId());
         if (eventAudit.getStatus().equals(EventAudit.Status.COMPLETED)) throw new AlreadyBuiltException("EVENT_AUDIT ALREADY PROCESSED");
