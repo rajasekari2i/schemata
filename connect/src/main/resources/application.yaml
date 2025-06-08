@@ -1,16 +1,16 @@
 spring:
   datasource:
-    url: jdbc:postgresql://34.27.156.232:5432/opsbeach?serverTimeZone=UTC&characterEncoding=UTF-8
+    url: jdbc:postgresql://localhost:5432/opsbeach?serverTimeZone=UTC&characterEncoding=UTF-8
     driver-class-name: org.postgresql.Driver
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASS}
+    username: root
+    password: root
     hikari:
       schema: analytics
   neo4j:
-    uri:  bolt://35.238.222.192:7687
+    uri:  bolt://localhost:7687
     authentication:
-      username: ${NEO4J_USER}
-      password: ${NEO4J_PASS}
+      username: neo4j
+      password: neo4j@123
   data:
     neo4j:
       database: neo4j
@@ -29,7 +29,7 @@ spring:
   #  port: 6379
   threading-future-timeout: 10000
   user:
-    base-url: https://api.aldefi.io/user/v1/auth/
+    base-url: http://localhost:7080/user/v1/auth/
     client-register: client/register
     user-register: user/register
     user: user
@@ -39,8 +39,8 @@ spring:
     audit: audit
     jwt-access: access
   github:
-    client-id: ${GH_CL_ID}
-    client-secret: ${GH_CL_SECRET}
+    client-id: Iv1.19e6f30a6fd55b13
+    client-secret: 6543675a07cc744135a661972981c51eaca725c5
   gcloud:
     repo-bucket: "schematalabs-github-boostrap"
     file-upload-bucket: "schematalabs-file-upload-bootstrap"
@@ -48,8 +48,8 @@ spring:
     location-id: us-central1
     queue-id: schematalabs-bootstrap-github
   smtp:
-    username: ${SMTP_USER_NAME}
-    password: ${SMTP_PASSWORD}
+    username: schematalabs@gmail.com
+    password: pivqhzsbzohrouxp
   security:
     oauth2:
       resource:
@@ -57,8 +57,8 @@ spring:
       client:
         registration:
           github:
-            clientId: ${GH_CL_ID}
-            clientSecret: ${GH_CL_SECRET}
+            clientId: Iv1.19e6f30a6fd55b13
+            clientSecret: 6543675a07cc744135a661972981c51eaca725c5
 scheduler:
   enabled: true
 server:
@@ -68,10 +68,10 @@ server:
   home-path: /connect/bootstrap/
   repo-storage-path: /home/surya-kumar/lakebyte/repos
 flyway:
-  url: jdbc:postgresql://34.27.156.232:5432/opsbeach
+  url: jdbc:postgresql://localhost:5432/opsbeach
   schemas: PUBLIC
-  user: ${POSTGRES_USER}
-  password: ${POSTGRES_PASS}
+  user: root
+  password: root
 
 #disable neo4j health check for now
 management:

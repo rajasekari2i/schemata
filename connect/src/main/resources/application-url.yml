@@ -1,10 +1,10 @@
 application:
   web:
-    baseURL: https://api.aldefi.io/
+    baseURL: http://localhost:3000
   user:
-    baseURL: https://api.aldefi.io/user/v1/
-    get-client-url: https://api.aldefi.io/user/v1/client/{id}
-    update-onboard-status: https://api.aldefi.io/user/v1/client/{id}?isOnboarded={isOnboarded}
+    baseURL: http://localhost:7080/user/v1/
+    get-client-url: http://localhost:7080/user/v1/client/{id}
+    update-onboard-status: http://localhost:7080/user/v1/client/{id}?isOnboarded={isOnboarded}
   analytics:
     baseURL: https://api.aldefi.io/analytics/v1/
 jira:
@@ -34,8 +34,8 @@ github:
   process_event_audit: https://api.aldefi.io/connect/v1/event-audit/process?eventAuditId={eventAuditId}
   tarball: https://api.github.com/repos/{FullName}/tarball/{branchName}
   refresh-token: https://github.com/login/oauth/access_token
-  redirect-url: https://api.aldefi.io/connect/v1/github/signin/callback?smClientId={smClientId}
-  repos-redirect-url: https://schemata.aldefi.io/repos
+  redirect-url: https://51c6-2401-4900-6332-afdf-2817-b774-b41c-cdba.ngrok-free.app/connect/v1/github/signin/callback?smClientId={smClientId}
+  repos-redirect-url: http://localhost:3000/repos
   login-url: https://github.com/login/oauth/authorize?scope=user&client_id={clientID}&redirect_uri={redirectURI}
   download_file_url: https://api.github.com/repos/{owner}/{repo}/contents/{path}
   create_branch_url: https://api.github.com/repos/{owner}/{repo}/git/refs

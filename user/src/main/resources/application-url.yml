@@ -1,6 +1,6 @@
 application:
   connect:
-    baseURL: https://api.aldefi.io/connect/v1/
-    create-organization-node: https://api.aldefi.io/connect/v1/schema/organization?clientName={clientName}
+    baseURL: http://localhost:7081/connect/v1/
+    create-organization-node: http://localhost:7081/connect/v1/schema/organization?clientName={clientName}
   analytics:
     baseURL: https://api.aldefi.io/analytics/v1/

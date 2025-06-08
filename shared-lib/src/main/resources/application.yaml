@@ -7,7 +7,7 @@ spring:
   connect:
 
   user:
-    base-url: https://api.aldefi.io/user/v1/auth/
+    base-url: http://localhost:7080/user/v1/auth/
     client-register: client/register
     user-register: user/register
     user: user
