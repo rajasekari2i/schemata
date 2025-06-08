@@ -1,5 +1,5 @@
 #stage 1
-FROM maven:3.8.5 as builder
+FROM maven:3.8.5 AS builder
 
 WORKDIR /app
 
@@ -17,7 +17,7 @@ ADD connect ./connect
 RUN mvn -pl shared-lib,connect package
 
 #stage 2
-FROM ubuntu:23.10
+FROM ubuntu:22.04
 WORKDIR /connect
 
 COPY --from=builder /app/connect/target/connect-1.0-SNAPSHOT.jar connect-1.0-SNAPSHOT.jar
@@ -27,8 +27,8 @@ RUN apt-get update && \
     apt-get install -y protobuf-compiler && \
     apt-get clean
 
-ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
-ENV PATH $PATH:$JAVA_HOME/bin
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$PATH:$JAVA_HOME/bin
 
-EXPOSE 7080
+EXPOSE 7081
 CMD ["java", "-jar", "connect-1.0-SNAPSHOT.jar"]

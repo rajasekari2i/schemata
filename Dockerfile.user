@@ -1,5 +1,5 @@
 #stage 1
-FROM maven:3.8.5 as builder
+FROM maven:3.8.5 AS builder
 
 WORKDIR /app
 ADD pom.xml .
@@ -20,5 +20,5 @@ FROM openjdk:17
 WORKDIR /user
 
 COPY --from=builder /app/user/target/user-1.0-SNAPSHOT.jar user-1.0-SNAPSHOT.jar
-EXPOSE 7083
+EXPOSE 7080
 CMD ["java", "-jar", "user-1.0-SNAPSHOT.jar"]
