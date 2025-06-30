@@ -60,15 +60,15 @@ services:
     networks:
       - backend
 
-  # user:
-  #   image: yourdockerhub/frontend:latest
-  #   ports:
-  #     - "3000:3000"  # Only frontend is exposed
-  #   depends_on:
-  #     - connect
-  #     - service2
-  #   networks:
-  #     - backend
+  ui:
+    image: schemata-ui:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - connect
+      - user
+    networks:
+      - backend
 
 volumes:
   schemata-postgres-data:
