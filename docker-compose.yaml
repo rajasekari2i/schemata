@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: opsbeach
+    volumes:
+      - schemata-postgres-data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  neo4j:
+    image: neo4j:latest
+    ports:
+      - "7474:7474"
+    environment:
+      NEO4J_AUTH: neo4j/neo4j@123
+    volumes:
+      - schemata-neo4j-data:/data
+    networks:
+      - backend
+
+  connect:
+    image: schemata-connect:latest
+    depends_on:
+      - postgres
+      - neo4j
+    ports:
+      - "7081:7081"
+    volumes:
+      - schemata-connect-bootstrap:/connect/bootstrap
+      - schemata-connect-repo-load:/connect/lakebyte/repos
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: root
+      POSTGRES_PASS: root
+      POSTGRES_DB: opsbeach
+      NEO4J_HOST: neo4j
+      NEO4J_USER: neo4j
+      NEO4J_PASS: neo4j@123
+      USER_BASE_URL: user
+    networks:
+      - backend
+
+  user:
+    image: schemata-user:latest
+    depends_on:
+      - connect
+    ports:
+      - "7080:7080"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: root
+      POSTGRES_PASS: root
+      POSTGRES_DB: opsbeach
+      CONNECT_BASE_URL: connect
+      USER_BASE_URL: user
+    networks:
+      - backend
+
+  ui:
+    image: schemata-ui:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - connect
+      - user
+    networks:
+      - backend
+
+volumes:
+  schemata-postgres-data:
+  schemata-neo4j-data:
+  schemata-connect-bootstrap:
+  schemata-connect-repo-load:
+
+networks:
+  backend:

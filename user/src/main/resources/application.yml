@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://34.27.156.232:5432/opsbeach?serverTimeZone=UTC&characterEncoding=UTF-8
+    url: jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}?serverTimeZone=UTC&characterEncoding=UTF-8
     driver-class-name: org.postgresql.Driver
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASS}
@@ -19,16 +19,16 @@ spring:
   application:
     name: user
   smtp:
-    username: ${SMTP_USER_NAME}
-    password: ${SMTP_PASSWORD}  
+    username: schematalabs@gmail.com
+    password: pivqhzsbzohrouxp
 server:
   port: 7080
   servlet:
     contextPath: /user
 flyway:
-  url: jdbc:postgresql://34.27.156.232:5432/opsbeach
+  url: jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}
   schemas: PUBLIC
-  user: ${POSTGRES_USER}
+  username: ${POSTGRES_USER}
   password: ${POSTGRES_PASS}
 
 management:

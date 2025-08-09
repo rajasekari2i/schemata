@@ -1,5 +1,5 @@
 #stage 1
-FROM maven:3.8.5 as builder
+FROM maven:3.8.5 AS builder
 
 WORKDIR /app
 ADD pom.xml .
@@ -16,9 +16,17 @@ ADD user ./user
 RUN mvn -pl shared-lib,user package
 
 #stage 2
-FROM openjdk:17
+FROM ubuntu:22.04
 WORKDIR /user
 
 COPY --from=builder /app/user/target/user-1.0-SNAPSHOT.jar user-1.0-SNAPSHOT.jar
-EXPOSE 7083
+
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk && \
+    apt-get clean
+
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV PATH=$PATH:$JAVA_HOME/bin
+
+EXPOSE 7080
 CMD ["java", "-jar", "user-1.0-SNAPSHOT.jar"]
