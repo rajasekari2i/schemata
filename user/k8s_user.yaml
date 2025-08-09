@@ -13,7 +13,7 @@ metadata:
 type: Opaque
 data:
   POSTGRES_USER: cG9zdGdyZXM=
-  POSTGRES_PASS: T3BzQmVAY2gxQDMk
+  POSTGRES_PASSWORD: T3BzQmVAY2gxQDMk
   SMTP_USER_NAME: c2NoZW1hdGFsYWJzQGdtYWlsLmNvbQ==
   SMTP_PASSWORD: cGl2cWh6c2J6b2hyb3V4cA==
 ---
@@ -51,11 +51,11 @@ spec:
               secretKeyRef:
                 name: user-app-secret
                 key: POSTGRES_USER
-          - name: POSTGRES_PASS
+          - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: user-app-secret
-                key: POSTGRES_PASS
+                key: POSTGRES_PASSWORD
           - name: SMTP_USER_NAME
             valueFrom:
               secretKeyRef:

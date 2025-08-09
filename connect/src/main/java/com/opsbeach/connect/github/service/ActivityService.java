@@ -46,6 +46,6 @@ public class ActivityService {
             specification = specification.and(activitySpecifications.findByWorkflowId(workflowId));
         }
         var activities = activityRepository.findAll(specification);
-        return activities.isEmpty() ? List.of() : activities.stream().map(activities.get(0)::toDto).toList();
+        return activities.stream().map(activity -> activity.toDto(activity)).toList();
     }
 }

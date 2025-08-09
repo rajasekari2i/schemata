@@ -118,10 +118,11 @@ public class GitHubService {
     private String deleteComment;
 
     @Lazy
-    @Autowired
+    @Autowired // Note: @Lazy @Autowired is used here to avoid circular dependency with WorkflowService
     private WorkflowService workflowService;
 
     private static final String ORGANIZATION = "Organization";
+    private static final String DEFAULT_BRANCH = "main"; // Extracted magic string
     
 
     public GitHubDto logInRedirect() {
@@ -396,20 +397,23 @@ public class GitHubService {
         var connectDto = connectService.get(clientRepo.getConnectId());
         SecurityUtil.setClientId(clientRepo.getClientId());
         var pullRequest = pullRequestService.findByRepoIdAndNumber(clientRepo.getId(), githubActionDto.getPrNumber());
-        if (Objects.isNull(pullRequest)) {
+        if (pullRequest == null) { // Use direct null check
             pullRequest = getPullRequest(githubActionDto, clientRepo, null, PullRequest.Status.OPEN, null, null, null);
             pullRequest.setSha(null);   // Sha should be null while creating PR for first time.
             pullRequest = pullRequestService.addModel(pullRequest);
         }
-        if (githubActionDto.getStatus().equalsIgnoreCase("closed")) {
+        // If PR is closed, mark validation as successful
+        if ("closed".equalsIgnoreCase(githubActionDto.getStatus())) {
             var schemaValidationDto = SchemaValidationDto.builder().status(true).build();
             return updatePrValidationStatus(schemaValidationDto, pullRequest, connectDto, clientRepo.getOwner(), clientRepo.getName());
         }
-        if (Objects.nonNull(githubActionDto.getSchemaValidationMessage())) {
+        // If there is a schema validation message, mark as failed
+        if (githubActionDto.getSchemaValidationMessage() != null) {
             var messages = Arrays.asList(githubActionDto.getSchemaValidationMessage().split("Summary"));
             var schemaValidationDto = SchemaValidationDto.builder().status(false).errorMessages(messages).build();
             return updatePrValidationStatus(schemaValidationDto, pullRequest, connectDto, clientRepo.getOwner(), clientRepo.getName());
         }
+        // If repo type is PROTOBUF, skip validation
         if (clientRepo.getRepoType().equals(RepoType.PROTOBUF)) {
             var schemaValidationDto = SchemaValidationDto.builder().status(true).build();
             return updatePrValidationStatus(schemaValidationDto, pullRequest, connectDto, clientRepo.getOwner(), clientRepo.getName());
@@ -417,13 +421,15 @@ public class GitHubService {
         Map<String, Table> newTableMap = new HashMap<>();
         var paths = githubActionDto.getFilesChanged().split(" ");
         for (String path : paths) {
-            var content = downloadFile(path, githubActionDto.getRepoName(), githubActionDto.getSourceBranch(), connectDto);
             try {
+                var content = downloadFile(path, githubActionDto.getRepoName(), githubActionDto.getSourceBranch(), connectDto);
                 var fileType = path.substring(path.lastIndexOf(".") + 1);
                 var tables = schemaFileAuditService.getTablesFromFileContent(content, Boolean.FALSE, fileType);
                 newTableMap.put(path, tables.get(tables.size() - 1));
             } catch (Exception e) {
-                var message = StringUtil.constructStringEmptySeparator("{ ",e.getMessage()," in file - ", path, " }");
+                // Log the error for traceability
+                log.error("Error processing file {}: {}", path, e.getMessage(), e);
+                var message = StringUtil.constructStringEmptySeparator("{ ", e.getMessage(), " in file - ", path, " }");
                 var schemaValidationDto = SchemaValidationDto.builder().status(false).errorMessages(List.of(message)).build();
                 return updatePrValidationStatus(schemaValidationDto, pullRequest, connectDto, clientRepo.getOwner(), clientRepo.getName());
             }
@@ -458,10 +464,10 @@ public class GitHubService {
     }
 
     private List<String> createValidationErrorMessage(SchemaValidationDto schemaValidationDto) {
-        // StringBuilder message = new StringBuilder("<html><body><h2>This PR has some errors: <h2><p>");
+        // Builds a markdown table and a list of error messages for PR comments and error reporting
         List<String> messages = new ArrayList<>();
         StringBuilder message = new StringBuilder("# Data Contract violation detected in the PR: \n");
-        if (Objects.nonNull(schemaValidationDto.getErrorMap())) {
+        if (schemaValidationDto.getErrorMap() != null) {
             message.append("| File name | Schema | Details |\n");
             message.append("|-------|-------|-------|\n");
             for (Map.Entry<String, Map<String, List<String>>> entry : schemaValidationDto.getErrorMap().entrySet()) {
@@ -621,11 +627,11 @@ public class GitHubService {
         payload.put("private", true);
         payload.put("has_issues", true);
         payload.put("auto_init", true);
-        payload.put("default_branch", "main");
+        payload.put("default_branch", DEFAULT_BRANCH); // Use constant
         var url = createRepoForAuthenticatedUser;
-        if (Boolean.FALSE.equals(ObjectUtils.isEmpty(owner))) {
+        if (owner != null && !owner.isEmpty()) {
             var userDetails = getUserDetails(connectDto, owner);
-            if (userDetails.get("type").asText().equals(ORGANIZATION)) {
+            if (ORGANIZATION.equals(userDetails.get("type").asText())) {
                 url = orgReposUrl.replace("{orgName}", owner);
             }
         }

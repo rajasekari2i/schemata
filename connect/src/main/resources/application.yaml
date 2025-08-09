@@ -3,14 +3,14 @@ spring:
     url: jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}?serverTimeZone=UTC&characterEncoding=UTF-8
     driver-class-name: org.postgresql.Driver
     username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASS}
+    password: ${POSTGRES_PASSWORD}
     hikari:
       schema: analytics
   neo4j:
     uri:  bolt://${NEO4J_HOST}:7687
     authentication:
       username: ${NEO4J_USER}
-      password: ${NEO4J_PASS}
+      password: ${NEO4J_PASSWORD}
   data:
     neo4j:
       database: neo4j
@@ -71,7 +71,7 @@ flyway:
   url: jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}
   schemas: PUBLIC
   username: ${POSTGRES_USER}
-  password: ${POSTGRES_PASS}
+  password: ${POSTGRES_PASSWORD}
 
 #disable neo4j health check for now
 management:
