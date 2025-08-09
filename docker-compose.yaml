@@ -48,7 +48,7 @@ services:
   user:
     image: schemata-user:latest
     depends_on:
-      - postgres
+      - connect
     ports:
       - "7080:7080"
     environment:
@@ -57,6 +57,7 @@ services:
       POSTGRES_PASS: root
       POSTGRES_DB: opsbeach
       CONNECT_BASE_URL: connect
+      USER_BASE_URL: user
     networks:
       - backend
 
@@ -73,6 +74,8 @@ services:
 volumes:
   schemata-postgres-data:
   schemata-neo4j-data:
+  schemata-connect-bootstrap:
+  schemata-connect-repo-load:
 
 networks:
   backend:
