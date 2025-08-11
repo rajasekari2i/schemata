@@ -3,6 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:14
+    restart: unless-stopped
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
@@ -10,24 +11,43 @@ services:
     volumes:
       - schemata-postgres-data:/var/lib/postgresql/data
     networks:
-      - backend
+      - schemata-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d opsbeach"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   neo4j:
     image: neo4j:latest
+    restart: unless-stopped
     ports:
-      - "7474:7474"
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
     environment:
       NEO4J_AUTH: neo4j/neo4j@123
     volumes:
       - schemata-neo4j-data:/data
+      - schemata-neo4j-logs:/logs
+      - schemata-neo4j-import:/var/lib/neo4j/import
     networks:
-      - backend
+      - schemata-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1"]
+      interval: 60s
+      timeout: 20s
+      retries: 5
+      start_period: 120s
 
   connect:
     image: schemata-connect:latest
+    restart: unless-stopped
     depends_on:
-      - postgres
-      - neo4j
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
     ports:
       - "7081:7081"
     volumes:
@@ -36,46 +56,49 @@ services:
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_USER: root
-      POSTGRES_PASS: root
+      POSTGRES_PASSWORD: root
       POSTGRES_DB: opsbeach
       NEO4J_HOST: neo4j
       NEO4J_USER: neo4j
-      NEO4J_PASS: neo4j@123
+      NEO4J_PASSWORD: neo4j@123
       USER_BASE_URL: user
     networks:
-      - backend
+      - schemata-network
 
   user:
     image: schemata-user:latest
+    restart: unless-stopped
     depends_on:
-      - connect
+      postgres:
+        condition: service_healthy
     ports:
       - "7080:7080"
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_USER: root
-      POSTGRES_PASS: root
+      POSTGRES_PASSWORD: root
       POSTGRES_DB: opsbeach
       CONNECT_BASE_URL: connect
       USER_BASE_URL: user
     networks:
-      - backend
+      - schemata-network
 
   ui:
     image: schemata-ui:latest
+    restart: unless-stopped
     ports:
       - "3000:3000"
-    depends_on:
-      - connect
-      - user
     networks:
-      - backend
+      - schemata-network
 
 volumes:
   schemata-postgres-data:
   schemata-neo4j-data:
+  schemata-neo4j-logs:
+  schemata-neo4j-import:
   schemata-connect-bootstrap:
   schemata-connect-repo-load:
 
 networks:
-  backend:
+  schemata-network:
+    driver: bridge

@@ -2,6 +2,7 @@
 FROM maven:3.8.5 AS builder
 
 WORKDIR /app
+
 ADD pom.xml .
 ADD shared-lib/pom.xml 	./shared-lib/pom.xml
 ADD user/pom.xml		./user/pom.xml

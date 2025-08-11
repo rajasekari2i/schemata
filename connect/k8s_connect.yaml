@@ -13,7 +13,7 @@ metadata:
 type: Opaque
 data:
   POSTGRES_USER: cG9zdGdyZXM=
-  POSTGRES_PASS: T3BzQmVAY2gxQDMk
+  POSTGRES_PASSWORD: T3BzQmVAY2gxQDMk
   NEO4J_USER: bmVvNGo=
   NEO4J_PASS: bmVvNGox
   GH_CL_ID: SXYxLjE5ZTZmMzBhNmZkNTViMTM=
@@ -80,11 +80,11 @@ spec:
               secretKeyRef:
                 name: connect-app-secret
                 key: POSTGRES_USER
-          - name: POSTGRES_PASS
+          - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: connect-app-secret
-                key: POSTGRES_PASS
+                key: POSTGRES_PASSWORD
           - name: NEO4J_USER
             valueFrom:
               secretKeyRef:
